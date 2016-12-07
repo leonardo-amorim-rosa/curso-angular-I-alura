@@ -1,36 +1,42 @@
-angular.module('projeto')
-    .controller('FotoController', function($scope, $routeParams, $location, FotoService) {
+/*
+Se protegendo da minificação, pois ela altera os nomes das variaveis e nada mais passa a funcionar, deve-se substituir todas as
+assinaturas de controllers, services e diretivas por esta para impedir que isso ocorra, esse processo tem o nome de 'annotation system'
+angular.module('alurapic')
+    .controller('FotoController', ['$scope', 'recursoFoto', '$routeParams', 'cadastroDeFotos', function($scope, recursoFoto, $routeParams, cadastroDeFotos) {
+            // código omitido
+    }]);
+*/
 
-        $scope.foto = {};
-        $scope.mensagem = '';
-    
-        if($routeParams.fotoId) {
-            FotoService.get({fotoId: $routeParams.fotoId}, function(retorno) {
-                 $scope.foto = retorno;
-            });
-        }
+angular.module('alurapic').controller('FotoController', function ($scope, recursoFoto, cadastroDeFotos, $routeParams) {
 
-        $scope.submeter = function() {
-           if($scope.formulario.$valid) {
-                if(!$routeParams.fotoId) {
-                    
-                    FotoService.save($scope.foto, function(_id) {
-                        $scope.foto = {};
-                        $scope.mensagem = 'Salvo com sucesso';
-                    }, function(status) {
-                        console.log(status);
-                        $scope.mensagem = 'Não foi possível salvar';
-                    });
+  $scope.foto = {};
+  $scope.mensagem = '';
 
-                } else {
-                    FotoService.update({fotoId : $scope.foto._id}, $scope.foto, function(_id) {
-                        $scope.foto = {};
-                        $scope.mensagem = 'Alterado com sucesso';                        
-                    }, function(status) {
-                        console.log(status);
-                        $scope.mensagem = 'Não foi possível alterar';
-                    });                    
-                }
-           } 
-        };
+  if ($routeParams.fotoId) {
+
+    recursoFoto.get({fotoId: $routeParams.fotoId}, function(foto) {
+      $scope.foto = foto;
+    }, function(error) {
+      console.log(error);
+      $scope.mensagem = "Não foi possível obter a foto";
     });
+
+  }
+
+  $scope.submeter = function() {
+
+      if ($scope.formulario.$valid) {
+        cadastroDeFotos.cadastrar($scope.foto)
+        .then(function(dados) {
+            $scope.mensagem = dados.mensagem;
+            if (dados.inclusao) $scope.foto = {};
+            //$scope.focado = true; //usando watch
+            //$scope.$broadcast('fotoCadastrada'); //event bus, disparando um evento, outra abordagem ao uso do watch
+        })
+        .catch(function(error) {
+          $scope.mensagem = error.mensagem;
+        });
+      }
+  };
+
+});

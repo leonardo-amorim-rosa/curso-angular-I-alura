@@ -1,24 +1,32 @@
-angular.module('projeto', 
-    ['ngResource','ngRoute', 'ngAnimate', 'ngCookies', 'Picture', 'Panel', 'FotoService'])
-    .config(function($routeProvider, $locationProvider) {
+angular.module('alurapic', ['minhasDiretivas', 'ngAnimate', 'ngRoute', 'meusServicos'])
+.config(function($routeProvider, $locationProvider) {
 
-        $locationProvider.html5Mode(true);
+  $locationProvider.html5Mode(true); //backend precisa estar preparado e configurado no servidor
 
-        $routeProvider.when('/fotos', {
-            templateUrl: 'partials/principal.html',
-            controller: 'PrincipalController'
-        });
+  //configurando uma rota para uma partial
+  $routeProvider.when('/fotos', {
+    templateUrl: 'partials/principal.html',
+    controller: 'FotosController'
+  });
 
-        $routeProvider.when('/fotos/new', {
-            templateUrl: 'partials/foto.html',
-            controller: 'FotoController'
-        });
+  $routeProvider.when('/fotos/new', {
+    templateUrl: 'partials/foto.html',
+    controller: 'FotoController'
+  });
 
-        $routeProvider.when('/fotos/edit/:fotoId', {
-            templateUrl: 'partials/foto.html',
-            controller: 'FotoController'
-        });
+  $routeProvider.when('/fotos/edit/:fotoId', {
+    templateUrl: 'partials/foto.html',
+    controller: 'FotoController'
+  });
 
-        $routeProvider.otherwise({redirectTo: '/fotos'});
+  /*
+  $routeProvider.when('/grupos', {
+    templateUrl: 'partials/foto.html',
+    controller: 'GruposController'
+  });*/
 
-    });
+  //rota padrão quando acessamos uma rota que não existe ou quando não
+  //especificamos nenhuma rota na url
+  $routeProvider.otherwise({ redirectTo: '/fotos' });
+
+});
